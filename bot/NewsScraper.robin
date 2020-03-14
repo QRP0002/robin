@@ -1,0 +1,59 @@
+# ***********************************************************
+#                           Constants
+# ***********************************************************
+set URL to "https://news.google.com/search?q=stock%3A(INSERT_PARAM)&hl=en-US&gl=US&ceid=US%3Aen"
+set TICKERS to ['F', 'SWN', 'RIG', 'HLX']
+set REPLACE_CODE to "(INSERT_PARAM)"
+
+# ***********************************************************
+#                           Variables
+# ***********************************************************
+# URL that will hold the Ticker Symbol.
+set sendURL to ''
+# Browser Tab Instance for a certain Ticker Symbol.
+set tickerInstance to false
+
+
+
+# ***********************************************************
+#                           MAIN CODE
+# ***********************************************************
+
+# Launching First Browser Instance.
+WebAutomation.LaunchChrome \
+    Url: "https://news.google.com/search?q=stock%3AF&hl=en-US&gl=US&ceid=US%3Aen" \
+    WindowState:WebAutomation.BrowserWindowState.Normal \
+    ClearCache:True \
+    ClearCookies:True \
+    BrowserInstance=> chromeInstance
+
+loop foreach t in TICKERS
+    # Creates the URL with the Ticker Symbol in the search field for easier searching.
+    call insertTickerToURL ticker: t url: URL find: REPLACE_CODE tickerURL=> sendURL
+    # Adds a new tab to the main browser instance that will call the web page with the current ticker.
+    call addNewTab  webInstance: chromeInstance url: sendURL newInstance=> tickerInstance
+end
+
+
+
+# ***********************************************************
+#                           FUNCTIONS
+# ***********************************************************
+
+function addNewTab webInstance, url, output newInstance
+    WebAutomation.CreateNewTab \
+        BrowserInstance: webInstance \
+        Url: url \
+        NewBrowserInstance=> tickerInstance
+end
+
+function insertTickerToURL ticker, url, find, output tickerURL
+    Text.Replace \
+        Text: url \
+        TextToFind: find \
+        ReplaceWith: ticker \  
+        IsRegEx:False \
+        IgnoreCase:False \
+        ActivateEscapeSequences:False \
+        Result=> tickerURL
+end
