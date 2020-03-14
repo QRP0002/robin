@@ -40,13 +40,25 @@ end
 #                           FUNCTIONS
 # ***********************************************************
 
+# Adds a new browser tab with the ticker search url.
+#
+# {@param webInstance} Main Browser Instance.
+# {@param url} URL string that we want to load for the new tab.
+# {@return} A Browser Instance for that Ticker's Tab.
 function addNewTab webInstance, url, output newInstance
     WebAutomation.CreateNewTab \
         BrowserInstance: webInstance \
         Url: url \
-        NewBrowserInstance=> tickerInstance
+        NewBrowserInstance=> newInstance
 end
 
+# Replace a URL string with the Ticker Symbol into the URL. 
+# URL has a section that has a set pattern to parse.
+#
+# {@param ticker} A string that represents the Ticker Symbol.
+# {@param url} A string that represents the URL that is being replaced.
+# {@param find} The string we are looking to replace in {@param url}. 
+# {@return} A string with the new URL.
 function insertTickerToURL ticker, url, find, output tickerURL
     Text.Replace \
         Text: url \
